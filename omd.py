@@ -6,7 +6,6 @@ def next_step_decider(option1, option2):
     while option not in options:
         print('Выберите: {}/{}'.format(*options))
         option = input()
-    
     return options[option]
 
 def step1():
