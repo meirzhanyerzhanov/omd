@@ -85,7 +85,7 @@ def write_csv(report_dict: dict) -> None:
     """
     Writes generated report to csv file
     """
-    with open('C:\\Users\\Meirzhan\\Desktop\\python\\Report.csv', 'w', newline='') as report:
+    with open('C:\\Users\\meirz\\Desktop\\AAA\\Python\\Homework\\Report.csv', 'w', newline='') as report:
         writer = csv.writer(report, delimiter=';')
         data = ['Название', 'Численность', 'Мин зарплата', 'Макс зарплата', 'Средняя зарплата']
         writer.writerow(data)
