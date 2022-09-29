@@ -1,0 +1,123 @@
+from typing import List
+import csv
+
+
+def next_step_decider() -> str:
+    """
+    Give a choice what step will be implemented
+    """
+    options = ['1', '2', '3']
+    option = ''
+    while option not in options:
+        print('Выберите: {} или {} или {}'.format(*options))
+        option = input()
+        if option not in options:
+            print("Please, select proper number (1-3)")
+    return option
+
+
+def open_csv_file() -> List[str]:
+    """
+    Opens csv
+    """
+    with open('C:\\Users\\meirz\\Desktop\\AAA\\Python\\Homework\\Corp_Summary.csv', 'r', encoding='utf8') as file:
+        lines = file.readlines()
+        summary_table = list(map(lambda x: x.split(';'), lines))
+    return summary_table
+
+
+def teams_summary(summary_table: List[str]) -> None:
+    """
+    Displays all teams summary
+    """
+    summary_dict = {}
+    for department in range(1, len(summary_table)):
+        if summary_table[department][1] not in summary_dict:
+            summary_dict[summary_table[department][1]] = set()
+        else:
+            summary_dict[summary_table[department][1]].add(summary_table[department][2])
+
+    print('Информация о командах:')
+    team_number = 1
+    for department in summary_dict:
+        print(f'{team_number}. Отдел \"{department}\": ', end='')
+        team_number += 1
+        index = 1
+        for team in summary_dict[department]:
+            if index < len(summary_dict[department]):
+                print(f'{team}, ', end='')
+            else:
+                print(f'{team}.')
+            index += 1
+
+
+def teams_report_generate(summary_table: List[str]) -> dict:
+    """
+    Generates report about teams
+    """
+    report_dict = {}
+    for department in range(1, len(summary_table)):
+        salary = int(summary_table[department][5])
+        if summary_table[department][1] not in report_dict:
+            report_dict[summary_table[department][1]] = [1, salary, salary, salary]
+        else:
+            report_dict[summary_table[department][1]][0] += 1
+            report_dict[summary_table[department][1]][3] += salary
+            if salary < report_dict[summary_table[department][1]][1]:
+                report_dict[summary_table[department][1]][1] = salary
+            elif salary > report_dict[summary_table[department][1]][2]:
+                report_dict[summary_table[department][1]][2] = salary
+
+    return report_dict
+
+
+def teams_report_print(report_dict: dict) -> None:
+    """
+    Prints generated report
+    """
+    print('Название          Численность      Мин зарплата      Макс зарплата      Средняя зарплата')
+    for department, report_list in report_dict.items():
+        average_salary = round(report_list[3] / report_list[0])
+        print(f'{department:12} {report_list[0]:12} {report_list[1]:18} {report_list[2]:18} {average_salary:18}')
+
+
+def write_csv(report_dict: dict) -> None:
+    """
+    Writes generated report to csv file
+    """
+    with open('C:\\Users\\Meirzhan\\Desktop\\python\\Report.csv', 'w', newline='') as report:
+        writer = csv.writer(report, delimiter=';')
+        data = ['Название', 'Численность', 'Мин зарплата', 'Макс зарплата', 'Средняя зарплата']
+        writer.writerow(data)
+        for department, report_list in report_dict.items():
+            average_salary = round(report_list[3] / report_list[0])
+            data = [department] + report_list[:3] + [average_salary]
+            writer.writerow(data)
+    report.close()
+
+
+def main_menu():
+    """
+    Main menu displays options for the next operations
+    """
+    print(
+        'Пожалуйста, выберете команду:\n'
+        '1. Информация о командах\n'
+        '2. Сводный отчет\n'
+        '3. Сохранить сводный отчет\n'
+        'Выбираете пункт меню, вводя соответствующее число'
+    )
+    summary_table = open_csv_file()
+    option = next_step_decider()
+    if option == '1':
+        return teams_summary(summary_table)
+    elif option == '2':
+        report_dict = teams_report_generate(summary_table)
+        return teams_report_print(report_dict)
+    elif option == '3':
+        report_dict = teams_report_generate(summary_table)
+        return write_csv(report_dict)
+
+
+if __name__ == '__main__':
+    main_menu()
